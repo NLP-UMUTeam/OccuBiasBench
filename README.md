@@ -51,7 +51,7 @@ The analysis reports:
 ├── inference/
 │   ├── README.md
 │   ├── VLMBase.py
-│   └── zero_shot.py
+│   └── zero-shot.py
 ├── results/
 │   ├── README.md
 │   ├── explicit/
@@ -87,7 +87,7 @@ Use this environment to run VLM inference and compute evaluation metrics:
 ```bash
 pip install -r requirements_inference.txt
 ```
-This environment is needed for: `inference/zero_shot.py`. `evaluation/compute_bias_metrics.py`, and `evaluation/compute_reasoning_ras.py`  
+This environment is needed for: `inference/zero-shot.py`. `evaluation/compute_bias_metrics.py`, and `evaluation/compute_reasoning_ras.py`  
 
 For VLM inference, GPU memory requirements depend on the selected model. Quantization can be enabled with:
 
@@ -165,7 +165,7 @@ The folder contains:
 | File           | Purpose                                                      |
 | -------------- | ------------------------------------------------------------ |
 | `VLMBase.py`   | Generic VLM wrapper for Gemma-3, Qwen3-VL, LLaVA, and InternVL models. |
-| `zero_shot.py` | Runs zero-shot inference over generated image metadata and writes JSONL predictions. |
+| `zero-shot.py` | Runs zero-shot inference over generated image metadata and writes JSONL predictions. |
 
 The VLM wrapper maps short aliases to Hugging Face model IDs, for example:
 
@@ -184,9 +184,9 @@ Example for final comparison prompts:
 ```bash
 cd inference
 
-python zero_shot.py \
-  --input_jsonl ../dataset/generated/metadata.jsonl \
-  --image_base_dir ../dataset/generated/images \
+python zero-shot.py \
+  --input_jsonl ../dataset/metadata.jsonl \
+  --image_base_dir ../dataset \
   --prompt_file_1 ../prompts/indirect_prompt.txt \
   --prompt_file_2 ../prompts/explicit_prompt.txt \
   --output_jsonl_prompt1 ../results/indirect/predictions_indirect_prompt_qwen3_vl_4b.jsonl \
@@ -201,9 +201,9 @@ Example for structured reasoning prompts:
 ```bash
 cd inference
 
-python zero_shot.py \
-  --input_jsonl ../dataset/generated/metadata.jsonl \
-  --image_base_dir ../dataset/generated/images \
+python zero-shot.py \
+  --input_jsonl ../dataset/metadata.jsonl \
+  --image_base_dir ../dataset \
   --prompt_file_1 ../prompts/reasoning_spatial_prompt.txt \
   --prompt_file_2 ../prompts/reasoning_gender_prompt.txt \
   --output_jsonl_prompt1 ../results/reasoning/spatial/predictions_reasoning_spatial_qwen3_vl_4b_analysis.jsonl \
@@ -295,17 +295,9 @@ A typical workflow is:
 ### 1. Generate images
 
 ```bash
-python dataset/generate_image_isco_balanced_ethnic_age.py \
-  --output_dir dataset/generated \
-  --model_id Tongyi-MAI/Z-Image-Turbo \
-  --height 1024 \
-  --width 1024 \
-  --steps 9 \
-  --guidance 0.0 \
-  --batch_size 4 \
-  --start_seed 1234 \
-  --device cuda \
-  --dtype bfloat16
+python generate_image_isco_balanced_ethnic_age.py \
+  --output_dir ./images \
+  --model_id Tongyi-MAI/Z-Image-Turbo 
 ```
 
 ### 2. Filter invalid images

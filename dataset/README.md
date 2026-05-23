@@ -29,7 +29,7 @@ Images can be regenerated using:
 ```bash
 python generate_image_isco_balanced_ethnic_age.py \
   --output_dir ./images \
-  --model_id Tongyi-MAI/Z-Image-Turbo \
+  --model_id Tongyi-MAI/Z-Image-Turbo 
 ```
 
 The script generates balanced paired images across:
