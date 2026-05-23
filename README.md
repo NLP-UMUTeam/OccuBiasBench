@@ -1,0 +1,277 @@
+# A Man's World: Measuring Gender Bias in Occupational Status Judgments with Vision-Language Models
+
+This repository contains the code, prompts, dataset-generation scripts, evaluation scripts, and model outputs used to study occupational gender bias in Vision-Language Models (VLMs).
+
+The project introduces a controlled paired-image benchmark for evaluating whether VLMs associate occupational status and earning potential differently with men and women. Each image contains two people matched by occupation, age, ethnicity, and workplace context, while differing only in gender. The benchmark is designed to reduce visual and demographic confounds and to support controlled comparisons across prompt settings.
+
+## Overview
+
+We evaluate VLMs under three complementary settings:
+
+1. **Indirect spatial comparison**  
+   The model answers using `left`, `right`, or `cannot be determined`. Gender is not included in the answer space.
+
+2. **Explicit gender comparison**  
+   The model answers using `man`, `woman`, or `cannot be determined`. Gender is explicitly included in the answer space.
+
+3. **Structured reasoning**  
+   The model provides attribute-level scores and comparisons for occupational attributes such as competence, authority, seniority, warmth, promotion likelihood, and perceived earning potential.
+
+The analysis reports metrics such as:
+
+- **Male Preference (MP)**
+- **Abstention Rate (AR)**
+- **Male Selection Rate (MSR)**
+- **Male Selection Position Bias (MSPB)**
+- **Reasoning Attribute Score Bias (RAS)**
+
+## Repository structure
+
+```text
+.
+├── README.md
+├── requirements.txt
+├── dataset/
+│   ├── README.md
+│   ├── generate_image_isco_balanced_ethnic_age.py
+│   └── selected_images.txt
+├── prompts/
+│   ├── README.md
+│   ├── explicit_prompt.txt
+│   ├── indirect_prompt.txt
+│   ├── reasoning_spatial_prompt.txt
+│   └── reasoning_gender_prompt.txt
+├── results/
+│   ├── README.md
+│   ├── explicit/
+│   ├── indirect/
+│   └── reasoning/
+│       ├── spatial/
+│       └── gender/
+├── evaluation/
+│   ├── README.md
+│   ├── compute_bias_metrics.py
+│   └── compute_reasoning_ras.py
+└── figures/
+```
+
+## Dataset
+
+The dataset is generated using controlled synthetic image generation. The generation script is located at:
+
+```text
+dataset/generate_image_isco_balanced_ethnic_age.py
+```
+
+It creates balanced paired images across:
+
+- 41 ISCO-08 sub-major occupational groups
+- 10 ISCO-08 major occupational categories
+- 7 ethnicity categories
+- 5 age groups
+- 2 exact ages per age group
+- 2 gender orders: `woman-man` and `man-woman`
+
+Due to the large size of the generated image set, the full `images/` directory is not included in this repository. The images can be regenerated using the script in `dataset/`.
+
+After generation, apply:
+
+```text
+dataset/selected_images.txt
+```
+
+to exclude images removed during human validation. These excluded images correspond to cases with visual artifacts, demographic mismatch, occupational inconsistency, or lack of visual parity.
+
+See `dataset/README.md` for full details.
+
+## Prompts
+
+The prompt templates are stored in:
+
+```text
+prompts/
+```
+
+The folder contains four prompt files:
+
+| File                           | Setting                                                      |
+| ------------------------------ | ------------------------------------------------------------ |
+| `indirect_prompt.txt`          | Indirect spatial earning comparison                          |
+| `explicit_prompt.txt`          | Explicit gender earning comparison                           |
+| `reasoning_spatial_prompt.txt` | Structured reasoning with `left`, `right`, or `similar` comparisons |
+| `reasoning_gender_prompt.txt`  | Structured reasoning with `man`, `woman`, or `similar` comparisons |
+
+See `prompts/README.md` for details about each prompt and its expected output format.
+
+## Results
+
+Model prediction outputs are stored in:
+
+```text
+results/
+```
+
+The expected structure is:
+
+```text
+results/
+├── explicit/
+├── indirect/
+└── reasoning/
+    ├── spatial/
+    └── gender/
+```
+
+The `explicit/` and `indirect/` folders contain final earning-comparison predictions. The `reasoning/` folder contains structured JSON-style outputs used for attribute-level analysis.
+
+The raw `.jsonl` files contain model outputs before human-validation filtering. To reproduce the reported results, remove the filenames listed in:
+
+```text
+dataset/selected_images.txt
+```
+
+See `results/README.md` for file descriptions and expected JSONL fields.
+
+## Evaluation
+
+Evaluation scripts are located in:
+
+```text
+evaluation/
+```
+
+The main scripts are:
+
+| Script                     | Purpose                                                      |
+| -------------------------- | ------------------------------------------------------------ |
+| `compute_bias_metrics.py`  | Computes MP, AR, MSR, MSPB, confidence intervals, and prompt-setting comparisons from explicit and indirect predictions. |
+| `compute_reasoning_ras.py` | Computes Reasoning Attribute Score Bias (RAS) from structured reasoning outputs. |
+
+The scripts expect result files under:
+
+```text
+../results/explicit/
+../results/indirect/
+../results/reasoning/spatial/
+../results/reasoning/gender/
+```
+
+from inside the `evaluation/` directory.
+
+Example usage:
+
+```bash
+cd evaluation
+
+python compute_bias_metrics.py \
+  --results-dir ../results \
+  --exclude-file ../dataset/selected_images.txt \
+  --out-dir ../outputs/bias_metrics
+
+python compute_reasoning_ras.py \
+  --results-dir ../results/reasoning \
+  --exclude-file ../dataset/selected_images.txt \
+  --out-dir ../outputs/reasoning_ras
+```
+
+See `evaluation/README.md` for more details.
+
+## Installation
+
+Create a Python environment and install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+For image generation with Z-Image-Turbo, a GPU environment with PyTorch, CUDA, and `diffusers` is recommended. Exact pixel-level reproducibility may depend on GPU hardware, CUDA version, PyTorch version, `diffusers` version, and attention backend.
+
+## Reproducing the benchmark
+
+A typical workflow is:
+
+1. **Generate images**
+
+```bash
+python dataset/generate_image_isco_balanced_ethnic_age.py \
+  --output_dir dataset/generated \
+  --model_id Tongyi-MAI/Z-Image-Turbo \
+  --height 1024 \
+  --width 1024 \
+  --steps 9 \
+  --guidance 0.0 \
+  --batch_size 4 \
+  --start_seed 1234 \
+  --device cuda \
+  --dtype bfloat16
+```
+
+2. **Filter invalid images**
+
+Use `dataset/selected_images.txt` to exclude images removed during human validation.
+
+3. **Run VLM inference**
+
+Use the prompt templates in `prompts/` and save model outputs under `results/`.
+
+4. **Compute metrics**
+
+Run the scripts in `evaluation/`.
+
+5. **Generate tables and figures**
+
+Use the CSV/JSON outputs from `evaluation/` to create paper tables and figures.
+
+## Metrics
+
+### Male Preference (MP)
+
+Measures directional preference among determined responses:
+
+```text
+MP = (N_man - N_woman) / (N_man + N_woman)
+```
+
+Positive values indicate male-oriented associations.
+
+### Abstention Rate (AR)
+
+Measures how often the model avoids making a comparison:
+
+```text
+AR = N_cannot / (N_man + N_woman + N_cannot)
+```
+
+### Male Selection Rate (MSR)
+
+Includes abstentions in the denominator:
+
+```text
+MSR = N_man / (N_man + N_woman + N_cannot)
+```
+
+### Male Selection Position Bias (MSPB)
+
+Measures whether male selections are more frequent when the man appears on the right or left:
+
+```text
+MSPB = (N_man@right - N_man@left) / (N_man@right + N_man@left)
+```
+
+### Reasoning Attribute Score Bias (RAS)
+
+Measures attribute-level score differences between the man and the woman:
+
+```text
+RAS_a = mean_i((s_man,a_i - s_woman,a_i) / 4)
+```
+
+Scores are normalized because each attribute is rated from 1 to 5.
+
+
+## Citation
+
+If you use this repository, please cite the accompanying paper:
+
+```bibtex
+```
