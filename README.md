@@ -1,6 +1,6 @@
 # A Man's World: Measuring Gender Bias in Occupational Status Judgments with Vision-Language Models
 
-This repository contains the code, prompts, dataset-generation scripts, evaluation scripts, and model outputs used to study occupational gender bias in Vision-Language Models (VLMs).
+This repository contains the code, prompts, image-generation scripts, inference scripts, evaluation scripts, and model outputs used to study occupational gender bias in Vision-Language Models (VLMs).
 
 The project introduces a controlled paired-image benchmark for evaluating whether VLMs associate occupational status and earning potential differently with men and women. Each image contains two people matched by occupation, age, ethnicity, and workplace context, while differing only in gender. The benchmark is designed to reduce visual and demographic confounds and to support controlled comparisons across prompt settings.
 
@@ -15,9 +15,9 @@ We evaluate VLMs under three complementary settings:
    The model answers using `man`, `woman`, or `cannot be determined`. Gender is explicitly included in the answer space.
 
 3. **Structured reasoning**  
-   The model provides attribute-level scores and comparisons for occupational attributes such as competence, authority, seniority, warmth, promotion likelihood, and perceived earning potential.
+   The model provides attribute-level scores and comparisons for occupational attributes such as competence, perceived authority, seniority, warmth, promotion likelihood, and perceived earning potential.
 
-The analysis reports metrics such as:
+The analysis reports:
 
 - **Male Preference (MP)**
 - **Abstention Rate (AR)**
@@ -41,6 +41,10 @@ The analysis reports metrics such as:
 │   ├── indirect_prompt.txt
 │   ├── reasoning_spatial_prompt.txt
 │   └── reasoning_gender_prompt.txt
+├── inference/
+│   ├── README.md
+│   ├── VLMBase.py
+│   └── zero_shot.py
 ├── results/
 │   ├── README.md
 │   ├── explicit/
@@ -48,15 +52,12 @@ The analysis reports metrics such as:
 │   └── reasoning/
 │       ├── spatial/
 │       └── gender/
-├── inference/
-│   ├── README.md
-│   ├── VLMBase.py
-│   └── zero_shot.py
 ├── evaluation/
 │   ├── README.md
 │   ├── compute_bias_metrics.py
 │   └── compute_reasoning_ras.py
-└── figures/
+├── figures/
+└── paper/
 ```
 
 ## Dataset
@@ -106,6 +107,69 @@ The folder contains four prompt files:
 | `reasoning_gender_prompt.txt`  | Structured reasoning with `man`, `woman`, or `similar` comparisons |
 
 See `prompts/README.md` for details about each prompt and its expected output format.
+
+## Inference
+
+Inference scripts are stored in:
+
+```text
+inference/
+```
+
+The folder contains:
+
+| File           | Purpose                                                      |
+| -------------- | ------------------------------------------------------------ |
+| `VLMBase.py`   | Generic VLM wrapper for Gemma-3, Qwen3-VL, LLaVA, and InternVL models. |
+| `zero_shot.py` | Runs zero-shot inference over generated image metadata and writes JSONL predictions. |
+
+The VLM wrapper maps short aliases to Hugging Face model IDs, for example:
+
+| Alias                   | Hugging Face model ID        |
+| ----------------------- | ---------------------------- |
+| `gemma3-12b-it`         | `google/gemma-3-12b-it`      |
+| `gemma3-27b-it`         | `google/gemma-3-27b-it`      |
+| `Qwen3-VL-4B-Instruct`  | `Qwen/Qwen3-VL-4B-Instruct`  |
+| `Qwen3-VL-8B-Instruct`  | `Qwen/Qwen3-VL-8B-Instruct`  |
+| `Qwen3-VL-32B-Instruct` | `Qwen/Qwen3-VL-32B-Instruct` |
+| `llava-1.5-7b`          | `llava-hf/llava-1.5-7b-hf`   |
+| `InternVL3_5-8B`        | `OpenGVLab/InternVL3_5-8B`   |
+
+Example for final comparison prompts:
+
+```bash
+cd inference
+
+python zero_shot.py \
+  --input_jsonl ../dataset/generated/metadata.jsonl \
+  --image_base_dir ../dataset/generated/images \
+  --prompt_file_1 ../prompts/indirect_prompt.txt \
+  --prompt_file_2 ../prompts/explicit_prompt.txt \
+  --output_jsonl_prompt1 ../results/indirect/predictions_indirect_prompt_qwen3_vl_4b.jsonl \
+  --output_jsonl_prompt2 ../results/explicit/predictions_explicit_prompt_qwen3_vl_4b.jsonl \
+  --model_name Qwen3-VL-4B-Instruct \
+  --quantization_config none \
+  --max_new_tokens 1024
+```
+
+Example for structured reasoning prompts:
+
+```bash
+cd inference
+
+python zero_shot.py \
+  --input_jsonl ../dataset/generated/metadata.jsonl \
+  --image_base_dir ../dataset/generated/images \
+  --prompt_file_1 ../prompts/reasoning_spatial_prompt.txt \
+  --prompt_file_2 ../prompts/reasoning_gender_prompt.txt \
+  --output_jsonl_prompt1 ../results/reasoning/spatial/predictions_reasoning_spatial_qwen3_vl_4b_analysis.jsonl \
+  --output_jsonl_prompt2 ../results/reasoning/gender/predictions_reasoning_gender_qwen3_vl_4b_analysis.jsonl \
+  --model_name Qwen3-VL-4B-Instruct \
+  --quantization_config none \
+  --max_new_tokens 4096
+```
+
+See `inference/README.md` for additional details.
 
 ## Results
 
@@ -188,13 +252,25 @@ Create a Python environment and install dependencies:
 pip install -r requirements.txt
 ```
 
-For image generation with Z-Image-Turbo, a GPU environment with PyTorch, CUDA, and `diffusers` is recommended. Exact pixel-level reproducibility may depend on GPU hardware, CUDA version, PyTorch version, `diffusers` version, and attention backend.
+For image generation with Z-Image-Turbo, a GPU environment with PyTorch, CUDA, and `diffusers` is recommended. For VLM inference, GPU memory requirements depend on the selected model. Quantization can be enabled with:
+
+```text
+--quantization_config 4bits
+```
+
+or:
+
+```text
+--quantization_config 8bits
+```
+
+Some Hugging Face models may require accepting model licenses before download.
 
 ## Reproducing the benchmark
 
 A typical workflow is:
 
-1. **Generate images**
+### 1. Generate images
 
 ```bash
 python dataset/generate_image_isco_balanced_ethnic_age.py \
@@ -210,21 +286,28 @@ python dataset/generate_image_isco_balanced_ethnic_age.py \
   --dtype bfloat16
 ```
 
-2. **Filter invalid images**
+### 2. Filter invalid images
 
 Use `dataset/selected_images.txt` to exclude images removed during human validation.
 
-3. **Run VLM inference**
+### 3. Run VLM inference
 
-Use the prompt templates in `prompts/` and save model outputs under `results/`.
+Use the scripts in `inference/` and the prompt templates in `prompts/`. Save model outputs under:
 
-4. **Compute metrics**
+```text
+results/explicit/
+results/indirect/
+results/reasoning/spatial/
+results/reasoning/gender/
+```
+
+### 4. Compute metrics
 
 Run the scripts in `evaluation/`.
 
-5. **Generate tables and figures**
+### 5. Generate paper tables and figures
 
-Use the CSV/JSON outputs from `evaluation/` to create paper tables and figures.
+Use the CSV/JSON outputs from `evaluation/` to create the paper tables and figures.
 
 ## Metrics
 
@@ -272,10 +355,30 @@ RAS_a = mean_i((s_man,a_i - s_woman,a_i) / 4)
 
 Scores are normalized because each attribute is rated from 1 to 5.
 
+## Notes on released files
+
+- The generated image files are not included due to size.
+- The generation code and metadata format are provided to support reproducibility.
+- `selected_images.txt` contains images excluded after human validation.
+- Raw model outputs are kept in JSONL format to preserve auditable responses.
+- Evaluation scripts produce reusable `.csv` and `.json` outputs.
+
+## Ethical use
+
+This repository is intended for research on bias evaluation and auditing of multimodal models. The dataset and outputs should not be used to:
+
+- rank real people,
+- infer sensitive attributes in deployment,
+- make hiring or salary decisions,
+- evaluate the professional ability of individuals.
+
+The benchmark is diagnostic and controlled. It is designed to isolate occupational gender associations under matched visual conditions.
 
 ## Citation
 
 If you use this repository, please cite the accompanying paper:
 
 ```bibtex
+@inproceedings{anonymous2026mansworld,
+
 ```
