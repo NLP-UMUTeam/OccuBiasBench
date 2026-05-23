@@ -58,9 +58,9 @@ The image path is resolved using `--image_base_dir`, which defaults to:
 From inside this folder:
 
 ```bash
-python zero_shot.py \
-  --input_jsonl ../dataset/generated/metadata.jsonl \
-  --image_base_dir ../dataset/generated/images \
+python zero-shot.py \
+  --input_jsonl ../dataset/metadata.jsonl \
+  --image_base_dir ../dataset \
   --prompt_file_1 ../prompts/indirect_prompt.txt \
   --prompt_file_2 ../prompts/explicit_prompt.txt \
   --output_jsonl_prompt1 ../results/indirect/predictions_indirect_prompt_qwen3_vl_4b.jsonl \
@@ -78,9 +78,9 @@ The same `zero_shot.py` script can also be used to run the structured reasoning 
 Example for Qwen3-VL-4B:
 
 ```bash
-python zero_shot.py \
-  --input_jsonl ../dataset/generated/metadata.jsonl \
-  --image_base_dir ../dataset/generated/images \
+python zero-shot.py \
+  --input_jsonl ../dataset/metadata.jsonl \
+  --image_base_dir ../dataset \
   --prompt_file_1 ../prompts/reasoning_spatial_prompt.txt \
   --prompt_file_2 ../prompts/reasoning_gender_prompt.txt \
   --output_jsonl_prompt1 ../results/reasoning/spatial/predictions_reasoning_spatial_qwen3_vl_4b_analysis.jsonl \
