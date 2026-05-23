@@ -48,6 +48,10 @@ The analysis reports metrics such as:
 │   └── reasoning/
 │       ├── spatial/
 │       └── gender/
+├── inference/
+│   ├── README.md
+│   ├── VLMBase.py
+│   └── zero_shot.py
 ├── evaluation/
 │   ├── README.md
 │   ├── compute_bias_metrics.py
