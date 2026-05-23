@@ -1,0 +1,11 @@
+torch==2.11.0
+diffusers @ git+https://github.com/huggingface/diffusers@7e463ea4cce63063198909950da58107cc0a52cf
+transformers==5.4.0
+huggingface_hub==1.8.0
+safetensors==0.7.0
+accelerate
+pillow==12.1.1
+numpy==2.4.4
+tqdm==4.67.3
+requests==2.33.1
+PyYAML==6.0.3

@@ -4,7 +4,13 @@ This repository contains the code, prompts, image-generation scripts, inference 
 
 The project introduces a controlled paired-image benchmark for evaluating whether VLMs associate occupational status and earning potential differently with men and women. Each image contains two people matched by occupation, age, ethnicity, and workplace context, while differing only in gender. The benchmark is designed to reduce visual and demographic confounds and to support controlled comparisons across prompt settings.
 
-## Overview
+<p align="center">
+  <img src="./figure/emnlp-bias.jpg" alt="">
+  <br>
+  <em>Overview of our controlled paired-image evaluation framework for studying occupational status judgments in vision-language models.</em>
+</p>
+
+## 📋 Overview
 
 We evaluate VLMs under three complementary settings:
 
@@ -25,12 +31,13 @@ The analysis reports:
 - **Male Selection Position Bias (MSPB)**
 - **Reasoning Attribute Score Bias (RAS)**
 
-## Repository structure
+## 🗂️ Repository structure
 
 ```text
 .
 ├── README.md
-├── requirements.txt
+├── requirements_generate_images.txt
+├── requirements_inference.txt
 ├── dataset/
 │   ├── README.md
 │   ├── generate_image_isco_balanced_ethnic_age.py
@@ -56,11 +63,48 @@ The analysis reports:
 │   ├── README.md
 │   ├── compute_bias_metrics.py
 │   └── compute_reasoning_ras.py
-├── figures/
-└── paper/
+└── figures/
 ```
 
-## Dataset
+## ⚙️ Installation
+
+We provide separate requirement files for image generation and VLM inference, since these steps may require different environments.
+
+### Image generation environment
+Use this environment to regenerate the synthetic image dataset with Z-Image-Turbo:
+
+```bash
+pip install -r requirements_generate_images.txt
+```
+
+This environment is needed for: `dataset generate_image_isco_balanced_ethnic_age.py`
+
+For image generation with Z-Image-Turbo, a GPU environment with PyTorch, CUDA, and `diffusers` is recommended. 
+
+### VLM inference and evaluation environment
+Use this environment to run VLM inference and compute evaluation metrics:
+
+```bash
+pip install -r requirements_inference.txt
+```
+This environment is needed for: `inference/zero_shot.py`. `evaluation/compute_bias_metrics.py`, and `evaluation/compute_reasoning_ras.py`  
+
+For VLM inference, GPU memory requirements depend on the selected model. Quantization can be enabled with:
+
+```text
+--quantization_config 4bits
+```
+
+or:
+
+```text
+--quantization_config 8bits
+```
+
+Some Hugging Face models may require accepting model licenses before download.
+
+
+## 📊 Dataset
 
 The dataset is generated using controlled synthetic image generation. The generation script is located at:
 
@@ -89,7 +133,7 @@ to exclude images removed during human validation. These excluded images corresp
 
 See `dataset/README.md` for full details.
 
-## Prompts
+## 💬 Prompts
 
 The prompt templates are stored in:
 
@@ -108,7 +152,7 @@ The folder contains four prompt files:
 
 See `prompts/README.md` for details about each prompt and its expected output format.
 
-## Inference
+## 🧠 Inference
 
 Inference scripts are stored in:
 
@@ -171,7 +215,7 @@ python zero_shot.py \
 
 See `inference/README.md` for additional details.
 
-## Results
+## 📈 Results
 
 Model prediction outputs are stored in:
 
@@ -200,7 +244,7 @@ dataset/selected_images.txt
 
 See `results/README.md` for file descriptions and expected JSONL fields.
 
-## Evaluation
+## 🧪 Evaluation
 
 Evaluation scripts are located in:
 
@@ -244,29 +288,7 @@ python compute_reasoning_ras.py \
 
 See `evaluation/README.md` for more details.
 
-## Installation
-
-Create a Python environment and install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-For image generation with Z-Image-Turbo, a GPU environment with PyTorch, CUDA, and `diffusers` is recommended. For VLM inference, GPU memory requirements depend on the selected model. Quantization can be enabled with:
-
-```text
---quantization_config 4bits
-```
-
-or:
-
-```text
---quantization_config 8bits
-```
-
-Some Hugging Face models may require accepting model licenses before download.
-
-## Reproducing the benchmark
+## 🔁 Reproducing the benchmark
 
 A typical workflow is:
 
@@ -355,7 +377,7 @@ RAS_a = mean_i((s_man,a_i - s_woman,a_i) / 4)
 
 Scores are normalized because each attribute is rated from 1 to 5.
 
-## Notes on released files
+## 📝 Notes on released files
 
 - The generated image files are not included due to size.
 - The generation code and metadata format are provided to support reproducibility.
@@ -363,7 +385,7 @@ Scores are normalized because each attribute is rated from 1 to 5.
 - Raw model outputs are kept in JSONL format to preserve auditable responses.
 - Evaluation scripts produce reusable `.csv` and `.json` outputs.
 
-## Ethical use
+## ⚖️ Ethical use
 
 This repository is intended for research on bias evaluation and auditing of multimodal models. The dataset and outputs should not be used to:
 
@@ -373,12 +395,3 @@ This repository is intended for research on bias evaluation and auditing of mult
 - evaluate the professional ability of individuals.
 
 The benchmark is diagnostic and controlled. It is designed to isolate occupational gender associations under matched visual conditions.
-
-## Citation
-
-If you use this repository, please cite the accompanying paper:
-
-```bibtex
-@inproceedings{anonymous2026mansworld,
-
-```
