@@ -4,10 +4,17 @@ This folder contains the dataset-related files used to construct and filter the 
 
 The benchmark is built from synthetic paired images in which two individuals share the same occupation, age, ethnicity, and workplace context, while differing only in gender. The dataset is designed to support controlled within-image comparisons and to reduce visual and demographic confounds.
 
+<p align="center">
+  <img src="../figure/examples_dataset.jpg" alt="">
+  <br>
+  <em> Examples of our generated images from text-to-image model.</em>
+</p>
 
 ## Image files
 
-Due to the large size of the generated image set, the full `images/` directory is not included in this repository. Instead, we provide the image-generation script and the metadata needed to reproduce the dataset. Users can regenerate the images locally by running `generate_image_isco_balanced_ethnic_age.py` with the parameters described below.
+Due to the large size of the generated image set, the full `images/` directory is not included in this repository. We provide a sample of 120 images in `sample_dataset/`, together with the image-generation script and metadata required to reproduce the dataset.
+
+Users who want to reconstruct the full dataset can regenerate the images locally by running `generate_image_isco_balanced_ethnic_age.py` with the parameters described below. 
 
 After regeneration, apply `selected_images.txt` to exclude the images removed during human validation. The remaining images correspond to the validated benchmark used in the experiments.
 
