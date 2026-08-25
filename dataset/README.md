@@ -1,5 +1,12 @@
 # Dataset
 
+<p align="center">
+  <a href="https://huggingface.co/datasets/UMUTeam/OccuBiasBench">
+    <img src="https://img.shields.io/badge/HuggingFace-UMUTeam-yellow?logo=huggingface"/>
+  </a>
+</p>
+
+
 This folder contains the dataset-related files used to construct and filter the controlled paired-image benchmark for occupational gender-bias evaluation in Vision-Language Models (VLMs).
 
 The benchmark is built from synthetic paired images in which two individuals share the same occupation, age, ethnicity, and workplace context, while differing only in gender. The dataset is designed to support controlled within-image comparisons and to reduce visual and demographic confounds.
