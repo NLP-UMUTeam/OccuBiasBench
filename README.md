@@ -13,7 +13,7 @@ OccuBiasBench introduces a controlled paired-image benchmark for evaluating whet
 
 
 <p align="center">
-  <img src="./figure/emnlp-bias.jpg" alt="">
+  <img src="./figure/emnlp-bias.png" alt="">
   <br>
   <em>Overview of our controlled paired-image evaluation framework for studying occupational status judgments in vision-language models.</em>
 </p>
@@ -55,7 +55,8 @@ The analysis reports:
 │   ├── explicit_prompt.txt
 │   ├── indirect_prompt.txt
 │   ├── reasoning_spatial_prompt.txt
-│   └── reasoning_gender_prompt.txt
+│   ├── reasoning_gender_prompt.txt
+│   └── text_only_prompt.txt
 ├── inference/
 │   ├── README.md
 │   ├── VLMBase.py
@@ -64,6 +65,7 @@ The analysis reports:
 │   ├── README.md
 │   ├── explicit/
 │   ├── indirect/
+│   ├── text_only/
 │   └── reasoning/
 │       ├── spatial/
 │       └── gender/
@@ -159,6 +161,7 @@ The folder contains four prompt files:
 | `explicit_prompt.txt`          | Explicit gender earning comparison                           |
 | `reasoning_spatial_prompt.txt` | Structured reasoning with `left`, `right`, or `similar` comparisons |
 | `reasoning_gender_prompt.txt`  | Structured reasoning with `man`, `woman`, or `similar` comparisons |
+| `text_only_prompt.txt`  | Structured text-only with `man`, `woman`, or `cannot be determined` comparisons |
 
 See `prompts/README.md` for details about each prompt and its expected output format.
 
@@ -239,6 +242,7 @@ The expected structure is:
 results/
 ├── explicit/
 ├── indirect/
+├── text_only/
 └── reasoning/
     ├── spatial/
     └── gender/
@@ -250,6 +254,13 @@ The raw `.jsonl` files contain model outputs before human-validation filtering. 
 
 ```text
 dataset/selected_images.txt
+```
+
+The text-only experiment contains 2,870 textual instances per model,
+constructed from:
+
+```text
+41 occupations × 7 ethnicities × 5 age groups × 2 counterbalanced orders
 ```
 
 See `results/README.md` for file descriptions and expected JSONL fields.

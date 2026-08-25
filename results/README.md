@@ -24,6 +24,12 @@ results/
 │   ├── predictions_indirect_prompt_qwen3_vl_4b.jsonl
 │   ├── predictions_indirect_prompt_qwen3_vl_8b.jsonl
 │   └── predictions_indirect_prompt_qwen_3_vl_32b.jsonl
+├── text_only/
+│   ├── predictions_indirect_prompt_gemma3_12b_it_text_only.jsonl
+│   ├── predictions_indirect_prompt_gemma3_27b_it_text_only.jsonl
+│   ├── predictions_indirect_prompt_qwen3_vl_4b_text_only.jsonl
+│   ├── predictions_indirect_prompt_qwen3_vl_8b_text_only.jsonl
+│   └── predictions_indirect_prompt_qwen_3_vl_32b_text_only.jsonl
 └── reasoning/
     ├── gender/
     │   ├── predictions_reasoning_gender_prompt_gemma3_12b_it_analysis.jsonl
@@ -36,6 +42,8 @@ results/
         ├── predictions_reasoning_spatial_qwen_3_vl_32b_analysis.jsonl
         └── predictions_reasoning_spatial_thinking_gemma3_12b_it.jsonl
 ```
+
+**Note**: Some filenames in text_only/ retain the indirect_prompt prefix for compatibility with the original inference scripts. However, the text-only experiment corresponds to the post-hoc explicit probe described in the paper: gender is explicitly provided in the textual input and the answer space is man, woman, or cannot be determined.
 
 ## Evaluation settings
 
@@ -95,6 +103,25 @@ man | woman | similar
 ```
 
 These outputs are used to compute Reasoning Attribute Score Bias (RAS) and to analyze attribute-level occupational stereotypes.
+
+## Post-hoc text-only explicit probe
+
+Files in ``text_only/`` correspond to the post-hoc text-only probe reported in the paper. This experiment removes the image and instead provides the occupation, age group, ethnicity, and gender of the two individuals directly in text.
+
+For each occupation--age--ethnicity combination, two counterbalanced variants are evaluated. In the second variant, the gender assignments of Person A and Person B are reversed while all other attributes remain unchanged.
+
+This produces:
+
+```text
+41 occupations × 7 ethnicities × 5 age groups × 2 order variants
+= 2,870 text-only instances per model
+```
+
+The text-only probe is used to compute MP and AR and to examine whether male-oriented earning associations can arise from demographic and occupational information without visual input.
+
+Importantly, this probe should not be interpreted as a controlled decomposition of language and vision. The text-only and image-based conditions are structurally different and are therefore analyzed separately.
+
+The text-only files are not filtered using dataset/selected_images.txt, because they do not correspond to generated images.
 
 ## JSONL format
 
