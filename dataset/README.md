@@ -1,10 +1,11 @@
-# Dataset
-
-<p align="center">
+<h1>
+  Dataset
   <a href="https://huggingface.co/datasets/UMUTeam/OccuBiasBench">
-    <img src="https://img.shields.io/badge/HuggingFace-UMUTeam-yellow?logo=huggingface"/>
+    <img src="https://img.shields.io/badge/🤗%20HuggingFace-OccuBiasBench-yellow"
+         alt="OccuBiasBench on Hugging Face"
+         height="24">
   </a>
-</p>
+</h1>
 
 
 This folder contains the dataset-related files used to construct and filter the controlled paired-image benchmark for occupational gender-bias evaluation in Vision-Language Models (VLMs).
