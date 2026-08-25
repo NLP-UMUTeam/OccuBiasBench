@@ -139,7 +139,7 @@ dataset/selected_images.txt
 
 to exclude images removed during human validation. These excluded images correspond to cases with visual artifacts, demographic mismatch, occupational inconsistency, or lack of visual parity.
 
-**The full dataset is available in [🤗 Hugging Face - OccuBiasBench](https://huggingface.co/datasets/UMUTeam/OccuBiasBench) **
+**The full dataset is available in [🤗 Hugging Face - OccuBiasBench](https://huggingface.co/datasets/UMUTeam/OccuBiasBench)**
 
 See `dataset/README.md` for full details.
 
