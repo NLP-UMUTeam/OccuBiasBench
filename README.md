@@ -1,4 +1,12 @@
-# OccuBiasBench
+<h1>
+  OccuBiasBench
+  <a href="https://huggingface.co/datasets/UMUTeam/OccuBiasBench">
+    <img src="https://img.shields.io/badge/🤗%20HuggingFace-OccuBiasBench-yellow"
+         alt="OccuBiasBench on Hugging Face"
+         height="24">
+  </a>
+</h1>
+
 This repository contains the code, prompts, image-generation pipeline, inference scripts, evaluation scripts, and model outputs used to study occupational gender bias in Vision-Language Models (VLMs).
 
 OccuBiasBench introduces a controlled paired-image benchmark for evaluating whether VLMs associate occupational status and earning potential differently with men and women. Each image contains two individuals matched by occupation, age, ethnicity, and workplace context, while differing only in gender. The benchmark is designed to reduce visual and demographic confounds and to support controlled comparisons across indirect, explicit, and reasoning-based evaluation settings.
