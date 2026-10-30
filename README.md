@@ -408,3 +408,27 @@ This repository is intended for research on bias evaluation and auditing of mult
 - evaluate the professional ability of individuals.
 
 The benchmark is diagnostic and controlled. It is designed to isolate occupational gender associations under matched visual conditions.
+
+## Citation
+
+```
+@inproceedings{pan-etal-2026-mans,
+    title = "A Man{'}s World: Measuring Gender Bias in Occupational Status Judgments with Vision-Language Models",
+    author = "Pan, Ronghao  and
+      Bernal-Beltran, Tomas  and
+      Garc{\'i}a-D{\'i}az, Jos{\'e} Antonio  and
+      Valencia-Garc{\'i}a, Rafael",
+    editor = "Lee, Hung-Yi  and
+      Dev, Sunipa  and
+      Li, Jessy  and
+      Elliott, Desmond",
+    booktitle = "Findings of the {A}ssociation for {C}omputational {L}inguistics: {EMNLP} 2026",
+    month = oct,
+    year = "2026",
+    address = "Budapest, Hungary",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2026.findings-emnlp.376/",
+    pages = "7936--7965",
+    ISBN = "979-8-89176-462-0",
+}
+```
